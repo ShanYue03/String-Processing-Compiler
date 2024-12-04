@@ -1,4 +1,4 @@
-** Steps to run in terminal **(should be run where the file located)
+** Steps to run in terminal **(Should be run at the location of the file)
 flex updated.l => (lex.yy.c generated)
 bison -dy updated.y => (y.tab.c and y.tab.h generated)
 gcc lex.yy.c y.tab.c => (a.exe generated)
