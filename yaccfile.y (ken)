@@ -160,3 +160,28 @@ statement:
     ;
 
 %%
+
+int main() {
+    // Prompt user to enter a sentence and store it
+    printf("Please enter a sentence:\n");
+    fgets(sentence, sizeof(sentence), stdin);
+    sentence[strcspn(sentence, "\n")] = '\0';  // Remove trailing newline
+
+    // Start the parsing process
+    do {
+        // Print the options after each operation
+        printf("\nSelect an operation:\n");
+        printf("0. Exit\n");
+        printf("1. View stored sentence\n");
+        printf("2. Add a new word\n");
+        printf("3. Delete a word\n");
+        printf("4. Switch words\n");
+
+        // Begin parsing
+        yyparse();  // Call the parser, which will handle the selected option
+
+    } while (choice != 0);  // Continue looping until the user selects 0
+
+    printf("\nExiting program...\n");
+    return 0;
+}
