@@ -15,7 +15,6 @@ int mode; // 共享变量，用于大小写转换
 %}
 
 %%
-/* 规则组 1：与 "first" 和 "second" 等相关的规则 */
 ^first[ \t]+([^\n]+) {
     yylval.string = strdup(yytext + 6);  // 提取字符串，跳过 "first "
     return FIRST;
@@ -38,7 +37,7 @@ int mode; // 共享变量，用于大小写转换
     return EXIT;
 }
 
-/* 规则组 2：处理命令如 reverse、vowels_consonants 等 */
+
 "reverse"           { return REVERSE; }
 "vowels_consonants" { return VOWELS_CONSONANTS; }
 "view"              { return VIEW; }
@@ -51,7 +50,7 @@ int mode; // 共享变量，用于大小写转换
     return STRING; 
 }
 
-/* 规则组 3：处理大小写转换、数字、特殊字符等 */
+
 [a-z] {
     if (mode == 1) {
         printf("%c", tolower(yytext[0]));  // 全部小写
@@ -87,13 +86,13 @@ int mode; // 共享变量，用于大小写转换
 \n {
     printf("\n");  // 换行符直接输出
 }
-
-/* 其他规则 */
-[ \t\n]+ ; // 忽略空白符
-. {
-    printf("Unexpected input: %s\n", yytext); // 处理无效输入
+%%
+[ \t\n]+ ;  
+. { 
+    printf(" Unexpected input: %s\n", yytext); // 处理无效输入
 }
 %%
+
 
 int yywrap() {
     return 1; // 返回 1 表示词法分析结束
