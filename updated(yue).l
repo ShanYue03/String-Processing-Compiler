@@ -4,7 +4,7 @@
 #include <string.h>
 #define MAX_LENGTH 1000
 
-// Declare global variables as extern
+// Declare global variables as extern.
 extern int vowels, consonants, others;
 
 %}
