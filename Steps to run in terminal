@@ -1,6 +1,7 @@
 ** Steps to run in terminal **(Should be run at the location of the file)
-flex updated.l => (lex.yy.c generated)
-bison -dy updated.y => (y.tab.c and y.tab.h generated)
-gcc lex.yy.c y.tab.c => (a.exe generated)
+step1:flex updated.l => (lex.yy.c generated)
+step2:bison -dy updated.y => (y.tab.c and y.tab.h generated)
+step3:gcc lex.yy.c y.tab.c => (a.exe generated)
 ./a.exe
 (When the program is running,to end the input: Window--Ctrl+Z then enter ; macOS--Ctrl+D)
+For mac,the third step need to be chaning to ./a.out 
