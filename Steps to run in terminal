@@ -1,0 +1,5 @@
+** Steps to run in terminal **
+flex updated.l
+bison -dy updated.y
+gcc lex.yy.c y.tab.c
+./a.exe
