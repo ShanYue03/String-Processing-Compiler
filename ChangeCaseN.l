@@ -31,6 +31,7 @@ extern int mode;
     putchar(yytext[0]);
 }
 
+
 [ \t] {  // 空格和制表符保持不变
     putchar(yytext[0]);
 }
