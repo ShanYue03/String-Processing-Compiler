@@ -3,73 +3,87 @@
 #include <stdlib.h>
 #include <string.h>
 
-// 用于存储模式的全局变量
-int mode = 0;
+// 声明全局变量 mode
+int mode;
 
-void process_input(const char *input);
+// Flex 提供的类型和函数声明
+typedef void* YY_BUFFER_STATE;
+extern YY_BUFFER_STATE yy_scan_string(const char *str);
+extern void yy_delete_buffer(YY_BUFFER_STATE buffer);
+extern int yylex();
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+}
 %}
 
+%start input
+
 %%
 
-// 规则部分，这里只定义空规则
-commands:
-    /* 空规则 */
+input:
+    mode_selection string_handling
 ;
 
-%%
-
-// 用户代码部分
-void process_input(const char *input) {
-    // 使用 Lex 分析器处理输入字符串
-    YY_BUFFER_STATE buffer = yy_scan_string(input);
-    if (buffer == NULL) {
-        printf("Error scanning input string.\n");
-        return;
-    }
-
-    yylex();  // 调用 Lex 分析器处理输入
-    yy_delete_buffer(buffer);  // 清理缓冲区
-}
-
-int main() {
-    char input[1024];
-
-    while (1) {
-        // 读取模式选择
+mode_selection:
+    {
         printf("Choose mode (1: all lowercase, 2: all uppercase, 3: swap case): ");
-        scanf("%d", &mode);
+        if (scanf("%d", &mode) != 1) {
+            fprintf(stderr, "Invalid input! Please enter a number.\n");
+            while (getchar() != '\n');  // 清空缓冲区
+            mode = 0;
+            return 0;  // 重新提示用户输入
+        }
         getchar();  // 吸收换行符
-
         if (mode < 1 || mode > 3) {
             printf("Invalid choice! Please enter 1, 2, or 3.\n");
-            continue;
+            return 0;
         }
+    }
+;
 
-        // 获取输入字符串
+string_handling:
+    {
+        char input[1024];  // 限制输入字符串长度
         printf("\nEnter a string (type 'exit' to quit): ");
-        fgets(input, sizeof(input), stdin);
-
-        // 去掉换行符
-        input[strcspn(input, "\n")] = '\0';
+        if (fgets(input, sizeof(input), stdin) == NULL) {
+            fprintf(stderr, "Error reading input.\n");
+            return 1;  // 正常退出
+        }
+        input[strcspn(input, "\n")] = '\0';  // 去掉换行符
 
         if (strcmp(input, "exit") == 0) {
             printf("Exiting program. Goodbye!\n");
-            break;
+            return 1;  // 返回非零值，退出主循环
         }
-
         if (strlen(input) == 0) {
             printf("Empty input! Please enter a non-empty string.\n");
-            continue;
+            return 0;
         }
 
-        // 调试信息
         printf("Processing input: %s\n", input);
 
-        // 处理输入字符串
-        process_input(input);
+        YY_BUFFER_STATE buffer = yy_scan_string(input);
+        if (buffer == NULL) {
+            fprintf(stderr, "Error: Failed to create buffer.\n");
+            return 0;
+        }
+
+        yylex();
+
+        yy_delete_buffer(buffer);
 
         printf("\n");
     }
-
+;
+%%
+   
+int main() {
+    while (1) {
+        int result = yyparse();
+        if (result != 0) {
+            break;
+        }
+    }
     return 0;
 }
