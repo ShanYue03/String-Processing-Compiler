@@ -1,34 +1,16 @@
 %{
 #include <stdio.h>
-#include <string.h>
-#include "y.tab.h"  // 包含 YACC 生成的头文件
+#include <stdlib.h>
+#include "y.tab.h" // 包含 Yacc 生成的头文件
 %}
 
 %%
-^first[ \t]+([^\n]+) {
-    yylval.string = strdup(yytext + 6);  // 提取字符串，跳过 "first "
-    return FIRST;
-}
-
-^second[ \t]+([^\n]+) {
-    yylval.string = strdup(yytext + 7);  // 提取字符串，跳过 "second "
-    return SECOND;
-}
-
-^concat$ {
-    return CONCAT;
-}
-
-^append_last$ {
-    return APPEND_LAST;
-}
-
-^exit$ {
-    return EXIT;
-}
-
-[ \t\n]+ ;  // 忽略空白符
-.          { printf("Unexpected input: %s\n", yytext); }  // 处理无效输入
+^first[ \t]+[^\n]+ { return FIRST; } // 匹配 "first <string>"
+^second[ \t]+[^\n]+ { return SECOND; } // 匹配 "second <string>"
+^concat$ { return CONCAT; } // 匹配 "concat"
+^append_last$ { return APPEND_LAST; } // 匹配 "append_last"
+^exit$ { return EXIT; } // 匹配 "exit"
+.|\n { /* 忽略无效输入 */ } // 忽略其他输入
 %%
 int yywrap() {
     return 1;
