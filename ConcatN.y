@@ -1,43 +1,41 @@
 %{
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 
-// 用于存储字符串
-char first[100] = "";
-char second[100] = "";
-char result[200] = "";
+// 声明全局变量
+char first[100] = "";  // 用于存储第一个字符串
+char second[100] = ""; // 用于存储第二个字符串
+char result[200] = ""; // 用于存储操作后的字符串
+
+// 声明 yylex 和 yytext
+extern int yylex();
+extern char *yytext;
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Error: %s\n", s);
+}
 %}
 
-%union {
-    char *string;  // Lex 文件传递的字符串
-}
-
-%token <string> FIRST SECOND
-%token CONCAT APPEND_LAST EXIT
+%token FIRST SECOND CONCAT APPEND_LAST EXIT
 
 %%
-
-// 主规则
 commands:
-    commands command
-  | /* 空规则 */
-  ;
+    | commands command
+;
 
 command:
-    FIRST {
-        strncpy(first, $1, sizeof(first) - 1);
-        first[sizeof(first) - 1] = '\0';
+    FIRST { 
+        strncpy(first, yytext + 6, sizeof(first) - 1); // 跳过 "first "
+        first[sizeof(first) - 1] = '\0'; // 确保字符串以 null 结尾
         printf("First string set to: %s\n", first);
-        free($1);  // 释放 strdup 分配的内存
     }
-  | SECOND {
-        strncpy(second, $1, sizeof(second) - 1);
-        second[sizeof(second) - 1] = '\0';
+    | SECOND {
+        strncpy(second, yytext + 7, sizeof(second) - 1); // 跳过 "second "
+        second[sizeof(second) - 1] = '\0'; // 确保字符串以 null 结尾
         printf("Second string set to: %s\n", second);
-        free($1);  // 释放 strdup 分配的内存
     }
-  | CONCAT {
+    | CONCAT {
         if (strlen(first) > 0 && strlen(second) > 0) {
             strcpy(result, first);
             strcat(result, second);
@@ -49,12 +47,12 @@ command:
                 printf("Second string is not set. Please use 'second <string>' to input it.\n");
         }
     }
-  | APPEND_LAST {
+    | APPEND_LAST {
         if (strlen(first) > 0 && strlen(second) > 0) {
             char last_char = first[strlen(first) - 1];
             char temp[2] = {last_char, '\0'};
             strcpy(result, second);
-            strcat(result, temp);  // 拼接第一个字符串的最后一个字符到第二个字符串
+            strcat(result, temp); // 拼接第一个字符串的最后一个字符到第二个字符串
             printf("Modified second string: %s\n", result);
         } else {
             if (strlen(first) == 0)
@@ -63,18 +61,12 @@ command:
                 printf("Second string is not set. Please use 'second <string>' to input it.\n");
         }
     }
-  | EXIT {
+    | EXIT {
         printf("Exiting...\n");
         exit(0);
     }
-  ;
+;
 %%
-
-// 错误处理函数
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
-}
-
 int main() {
     printf("Commands:\n");
     printf("1. Input first string: first <your_string>\n");
