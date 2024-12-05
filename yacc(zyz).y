@@ -7,6 +7,7 @@ char *longest = NULL;
 int max_length = 0;
 
 void update_longest(const char *str);
+void yyerror(const char *s);
 %}
 
 %union {
