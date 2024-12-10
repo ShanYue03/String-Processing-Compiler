@@ -142,7 +142,9 @@ int main() {
 void reverseString(char* str) {
     int len = strlen(str);
     char temp[MAX_LENGTH] = "";
-    for (int i = len - 1; i >= 0; i--) {
+
+    int i;
+    for (i = len - 1; i >= 0; i--) {
         strncat(temp, &str[i], 1);
     }
     strcpy(str, temp);
@@ -150,7 +152,9 @@ void reverseString(char* str) {
 
 void countVowelsConsonants(char* str) {
     int vowels = 0, consonants = 0, others = 0;
-    for (int i = 0; str[i]; i++) {
+
+    int i;
+    for (i = 0; str[i]; i++) {
         char c = tolower(str[i]);
         if (strchr("aeiou", c)) {
             vowels++;
@@ -166,11 +170,17 @@ void countVowelsConsonants(char* str) {
 }
 
 void findPalindrome() {
-    char* word = strtok(sentence, " ");
+    char temp[MAX_LENGTH];
+    strcpy(temp, sentence); // Make a copy of the sentence to avoid modifying it
+
+    char* word = strtok(temp, " \n");
+    int found = 0;
     while (word != NULL) {
         int len = strlen(word);
         int is_palindrome = 1;
-        for (int i = 0; i < len / 2; i++) {
+
+        int i;
+        for (i = 0; i < len / 2; i++) {
             if (tolower(word[i]) != tolower(word[len - i - 1])) {
                 is_palindrome = 0;
                 break;
@@ -178,28 +188,34 @@ void findPalindrome() {
         }
         if (is_palindrome) {
             printf("Palindrome found: %s\n", word);
+            found = 1;
         }
-        word = strtok(NULL, " ");
+        word = strtok(NULL, " \n");
+    }
+    if (!found) {
+        printf("No palindromes found.\n");
     }
 }
 
 void countWordsLinesSpacesChars() {
     int words = 0, lines = 1, spaces = 0, chars = 0;
-    for (int i = 0; sentence[i]; i++) {
+    int in_word = 0;
+
+    int i;
+    for (i = 0; sentence[i]; i++) {
         chars++;
+        if (sentence[i] == '\n') {
+            lines++;
+        }
         if (isspace(sentence[i])) {
             spaces++;
-            if (sentence[i] == '\n') {
-                lines++;
-            }
+            in_word = 0;
+        } else if (!in_word) {
+            words++;
+            in_word = 1;
         }
     }
-    // Count words (based on spaces)
-    char* token = strtok(sentence, " \n");
-    while (token != NULL) {
-        words++;
-        token = strtok(NULL, " \n");
-    }
+
     printf("\nWords: %d\n", words);
     printf("Lines: %d\n", lines);
     printf("Spaces: %d\n", spaces);
