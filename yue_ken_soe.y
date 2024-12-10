@@ -18,6 +18,8 @@ void countVowelsConsonants(char* str);
 void addWordToString();
 void deleteWord();
 void replaceWord();
+void findPalindrome();
+void countWordsLinesSpacesChars();
 void resetBuffer();
 
 void yyerror(const char* s) {
@@ -31,7 +33,7 @@ int yylex();
     char* str_val;
 }
 
-%token REVERSE VOWELS_CONSONANTS VIEW ADD_WORD DELETE_WORD REPLACE_WORD
+%token REVERSE VOWELS_CONSONANTS VIEW ADD_WORD DELETE_WORD REPLACE_WORD PALINDROME COUNT
 %token <str_val> WORD STRING
 %token PLUS SPACE NEWLINE CHAR
 
@@ -63,6 +65,12 @@ statement:
     | REPLACE_WORD {
           replaceWord();
           printf("Updated string: %s\n", sentence);
+      }
+    | PALINDROME {
+          findPalindrome();
+      }
+    | COUNT {
+          countWordsLinesSpacesChars();
       }
     | concat_statement {
           printf("Concatenated string: %s\n", concatenated);
@@ -99,6 +107,8 @@ int main() {
         printf("5. Reverse the string\n");
         printf("6. Count number of vowels and consonants\n");
         printf("7. Concatenate strings using '+'\n");
+        printf("8. Find palindromes\n");
+        printf("9. Count words, lines, spaces, and characters\n");
         printf("Enter option: ");
         scanf("%d", &choice);
         getchar(); // Consume newline
@@ -118,6 +128,8 @@ int main() {
                 yyparse();
                 break;
             }
+            case 8: yy_scan_string("palindrome"); yyparse(); break;
+            case 9: yy_scan_string("count"); yyparse(); break;
             case 0: printf("Exiting program. Goodbye!\n"); break;
             default: printf("Invalid option. Try again.\n"); break;
         }
@@ -151,6 +163,47 @@ void countVowelsConsonants(char* str) {
     printf("\nNumber of vowels: %d\n", vowels);
     printf("Number of consonants: %d\n", consonants);
     printf("Number of other characters: %d\n", others);
+}
+
+void findPalindrome() {
+    char* word = strtok(sentence, " ");
+    while (word != NULL) {
+        int len = strlen(word);
+        int is_palindrome = 1;
+        for (int i = 0; i < len / 2; i++) {
+            if (tolower(word[i]) != tolower(word[len - i - 1])) {
+                is_palindrome = 0;
+                break;
+            }
+        }
+        if (is_palindrome) {
+            printf("Palindrome found: %s\n", word);
+        }
+        word = strtok(NULL, " ");
+    }
+}
+
+void countWordsLinesSpacesChars() {
+    int words = 0, lines = 1, spaces = 0, chars = 0;
+    for (int i = 0; sentence[i]; i++) {
+        chars++;
+        if (isspace(sentence[i])) {
+            spaces++;
+            if (sentence[i] == '\n') {
+                lines++;
+            }
+        }
+    }
+    // Count words (based on spaces)
+    char* token = strtok(sentence, " \n");
+    while (token != NULL) {
+        words++;
+        token = strtok(NULL, " \n");
+    }
+    printf("\nWords: %d\n", words);
+    printf("Lines: %d\n", lines);
+    printf("Spaces: %d\n", spaces);
+    printf("Characters: %d\n", chars);
 }
 
 void addWordToString() {
