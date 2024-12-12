@@ -116,8 +116,8 @@ int main() {
         printf("8. String case conversion\n");
         printf("9. Find palindromes\n");
         printf("10. Count words, lines, spaces, and characters\n");
-		printf("11. Print string with length.\n");
-		printf("12. Print longest length.\n");
+		printf("11. Print length of each string\n");
+		printf("12. Print longest length\n");
         printf("Enter option: ");
         scanf("%d", &choice);
         getchar();
